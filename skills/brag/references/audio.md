@@ -6,6 +6,26 @@ Bias toward a smooth, professional result: one tasteful music bed plus a small n
 
 ---
 
+## Sound design without a music bed
+
+For `--sound-design`, build the soundtrack around a real product flow. Choose
+the visual actions first and use their exact animation times as the cue sheet.
+
+- **Interaction.** Place a dry click or tap on contact, and vary the bundled
+  keystrokes during visible typing. Keep repeated cues soft.
+- **Movement.** Use a short slide or sweep as a panel, card, or camera starts
+  moving. Let the transition finish cleanly before the next action.
+- **Payoff.** Layer a soft impact and a brief tonal cue on the most important
+  reveal. Give the two sounds separate tracks and balance them as one event.
+- **Space.** Leave quiet gaps between actions. Use the density and texture of
+  the effects to establish rhythm.
+
+In the brief, record the visible event, onset time, sound, and gain for each
+implemented cue. Use the same timestamp for clicks and the corresponding UI
+response, and place reward sounds when the result lands. Check the opening,
+the main interaction, and the loudest stack with sound during preview, then
+spot-check the same moments in the MP4. Balance overlaps below clipping.
+
 ## Audio-reactive visuals
 
 When music is present, prefer a subtle audio-reactive treatment unless the tone asks for stillness or deadpan restraint. This does not mean beat detection. It means Hyperframes can pre-extract per-frame audio data and use RMS/frequency-band energy to modulate existing visual elements.

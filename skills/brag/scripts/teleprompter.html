@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=1920,height=1080">
+  <title>Brag narration guide</title>
+  <style>
+    html, body { margin: 0; background: #111116; }
+    #root { position: relative; width: 1920px; height: 1080px; color: #e7e7ec; font-family: sans-serif; }
+    header { position: absolute; inset: 80px 112px auto; display: flex; justify-content: space-between; align-items: center; }
+    #timecode { font: 64px monospace; color: #f9da83; }
+    #status { font: 32px monospace; }
+    #script { position: absolute; inset: 235px 112px 130px; border-top: 2px solid #626270; }
+    #script p { margin: 90px 0 0; font-size: 66px; line-height: 1.32; }
+    #script span.spoken { color: #f9da83; }
+    #progress { position: absolute; inset: auto 112px 80px; height: 8px; background: #626270; }
+    #played { height: 100%; background: #f9da83; transform-origin: left; }
+  </style>
+</head>
+<body>
+  <main id="root" data-composition-id="main" data-no-timeline data-start="0" data-width="1920" data-height="1080"
+        data-duration="{{DURATION}}" data-fps="{{FPS}}">
+    <header><div id="timecode">00:00:00:00</div><div id="status">Stand by</div></header>
+    <div id="script"><div id="lines">
+      {{LINES}}
+    </div></div>
+    <div id="progress"><div id="played"></div></div>
+    <audio id="guide" class="clip" src="assets/guide.wav" data-start="0"
+           data-duration="{{DURATION}}" data-track-index="1" data-volume="1"></audio>
+  </main>
+  <script>
+    const timing = {{TIMING}};
+    const fps = {{FPS}};
+    const duration = {{DURATION}};
+    const lines = [...document.querySelectorAll("#lines p")];
+    const timecode = document.getElementById("timecode");
+    const status = document.getElementById("status");
+    const played = document.getElementById("played");
+    const twoDigits = (value) => String(value).padStart(2, "0");
+
+    function renderAt(time) {
+      const frame = Math.round(time * fps);
+      const seconds = Math.floor(frame / fps);
+      timecode.textContent = [
+        Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60, frame % fps,
+      ].map(twoDigits).join(":");
+      let active = -1;
+      timing.forEach(([start], index) => { if (time >= start - 0.35) active = index; });
+      status.textContent = active < 0 ? "Stand by" : `Line ${active + 1} of ${lines.length}`;
+      lines.forEach((line, index) => { line.hidden = index !== Math.max(active, 0); });
+      const shown = Math.max(active, 0);
+      [...lines[shown].children].forEach((word, index) => {
+        word.classList.toggle("spoken", time >= timing[shown][1][index]);
+      });
+      played.style.transform = `scaleX(${Math.min(1, time / duration)})`;
+    }
+
+    window.addEventListener("hf-seek", (event) => renderAt(event.detail.time));
+    renderAt(0);
+  </script>
+</body>
+</html>

@@ -74,6 +74,28 @@ ffmpeg -y -i brag.mp4 -i brag.jpg \
 
 The poster (`brag.jpg`) matches the video's dimensions because it was pulled from the same render, so the overlay lines up exactly. Keep `brag.jpg` alongside — it's the custom-thumbnail asset for platforms that accept an upload (Instagram, TikTok, YouTube, Facebook, and the LinkedIn post editor) and the `poster="brag.jpg"` image for any `<video>` that embeds the brag (a gallery card, the user's site).
 
+## Export stems and teleprompter
+
+For `--stems` or `--teleprompter`, run this after baking the poster:
+
+```bash
+python3 <skill-dir>/scripts/export_stems.py <output-dir>
+```
+
+The `stems/` directory contains 48 kHz, 24-bit stereo dialogue, music,
+sound effects, and the rendered audio mix. Every stem starts at 0:00 and
+spans the video. Missing layers produce silent stems.
+
+For `--teleprompter`, run the transcript and guide renderer in the same run:
+
+```bash
+python3 <skill-dir>/scripts/teleprompter.py <output-dir> --render
+```
+
+It uses the exact narration text saved during composition and estimates
+word timing from the recorded dialogue. Deliver the MP4 guide and caption
+sidecars from `stems/` with the main video.
+
 ## Write share copy
 
 Write `<output-dir>/share-copy.txt`.

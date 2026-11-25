@@ -75,7 +75,7 @@ Load the composition-building Hyperframes skills — `hyperframes` (composition 
 Requirements:
 - Show at least one real UI, copy, or visual element from the source project.
 - Keep all text readable in the final render.
-- Keep the video within 15-25 seconds.
+- Match the planned duration. Use 15–25 seconds when no duration was requested.
 - Include the planned music/SFX layer unless audio was explicitly disabled or documented as intentionally silent.
 - Treat `/brag` audio notes as guidance, not a fixed cue sheet. Choose SFX after the visual animation exists.
 - Treat music cue metadata as optional timing hints. Hyperframes decides exact animation timing and should ignore cues that hurt readability, scene pacing, or the product story.
@@ -94,7 +94,8 @@ The brief is the boundary: if a detail belongs to product positioning, copy, ton
 
 ## Audio asset preparation
 
-Read [audio.md](audio.md). Copy the planned music into `<output-dir>/composition/assets/music/` before building the composition.
+Read [audio.md](audio.md). When music is enabled, copy the planned track into
+`<output-dir>/composition/assets/music/` before building the composition.
 
 ```bash
 mkdir -p <output-dir>/composition/assets/music
@@ -104,6 +105,13 @@ cp <skill-dir>/assets/music/<track>.mp3 <output-dir>/composition/assets/music/
 `<skill-dir>` is this skill's own directory (see "Skill directory" in `SKILL.md`).
 
 Hyperframes copies any SFX it selects into the same `assets/` tree after choosing exact files.
+
+For `--stems` or `--teleprompter`, keep the mix in timed `<audio>` clips
+with unique IDs and local assets. Use `assets/vo/`, `assets/music/`, and
+`assets/sfx/` so the exporter can group them. If footage needs its own
+sound, extract it to a timed `<audio>` clip and mute its video element.
+The clean stems carry clip trims, gain, edge fades and linear volume
+automation. Use those controls for the stem mix.
 
 ---
 
@@ -136,7 +144,13 @@ Wire it into the composition on its own track. Music ducks to 0.12–0.15 for th
 <audio id="vo" data-start="0" data-track-index="3" data-volume="1" src="assets/voiceover.wav"></audio>
 ```
 
-The 15-25 second window holds whether or not narration is on. Write the narration script to fit that window. Within the window, scene durations flex to match the generated audio rather than being fixed in advance: check the WAV duration after generation and adjust `data-duration` values accordingly. If the rendered narration overruns the window, cut the script and regenerate; do not stretch the video past 25 seconds to fit it.
+Write the narration to fit the planned duration, using 15–25 seconds when no
+duration was requested. Check the generated WAV and cut and regenerate the
+script when it overruns the plan.
+
+For `--teleprompter`, save the exact narration text in
+`composition/assets/vo/script.json`. Map each dialogue audio ID to its text,
+for example `{"voice":"Kokoro","lines":{"vo1":"Your first line."}}`.
 
 ---
 
@@ -203,13 +217,11 @@ Before moving to delivery, verify:
 - [ ] `<output-dir>/composition-brief.md` exists.
 - [ ] The brief clearly identifies the exact product moments to show.
 - [ ] The composition uses the current Hyperframes workflow, not a hardcoded `/brag` template.
-- [ ] Music file is copied into `<output-dir>/composition/assets/music/`.
-- [ ] At least one visual element subtly reacts to the music (audio-reactive treatment present), or extraction failure is documented.
-- [ ] At least 1 major tween is beat-locked to a strong cue (a `strongCue`, or the highest-`strength` beat from `hyperframes beats`) within ±0.15s, marked `// beat-locked` (or natural timing was chosen for readability).
-- [ ] Sequential events (cards, stats, list items) snap to consecutive `beats[]` timestamps (±0.10s), marked `// beat-grid` (or natural timing was chosen for readability).
+- [ ] With music enabled, the track is copied into `<output-dir>/composition/assets/music/`. Where a cue grid is available, use it for major and sequential events when it improves the edit. Apply the planned audio-reactive treatment or record an extraction failure.
+- [ ] With `--sound-design` and effects enabled, audible clicks, movements, and reveal cues land with their planned visual events, and overlapping effects stay below clipping.
 - [ ] The composition shows at least one real UI, copy, or visual element from the project.
 - [ ] Every factual claim on screen is grounded in the project (see below).
-- [ ] Total duration is 15-25 seconds.
+- [ ] Total duration matches the plan.
 - [ ] Hyperframes check passes, or any blocker is documented for the user.
 
 ### Grounding factual claims

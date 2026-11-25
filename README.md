@@ -122,6 +122,36 @@ Narration uses Kokoro through Hyperframes when enabled.
 
 You get a `brag-output/` folder with the plan, a composition brief, share copy, and the rendered `brag.mp4`.
 
+### Launch videos with motion-timed sound
+
+Install this fork's skill in your app project:
+
+```bash
+npx skills add https://github.com/virajparmaj/brag --skill brag
+```
+
+```text
+/brag --sound-design --tone polished --format vertical --stems
+```
+
+`--sound-design` uses the full HyperFrames workflow and disables the music
+bed. Build the edit around a real action in your app, then time clicks,
+keystrokes, movement, and layered reveal sounds to the animation.
+`--stems` adds editable audio tracks and the rendered mix to the output.
+Use `--voice --teleprompter` when you also want a narration guide and captions.
+For native apps, the workflow can use recorded simulator, emulator, or
+desktop interaction footage as the source.
+
+### Feature demos from pull requests
+
+```text
+/brag --pr 42 --sound-design
+```
+
+Pass a PR number or its GitHub URL to show the old and new behavior in the
+same product flow. The demo and source context go to `brag-output-pr-42/`.
+The GitHub CLI can retrieve PR metadata and the diff.
+
 ## How it works
 
 `/brag` owns the story — the product angle, tone, and which moments to show. It hands a focused brief to [Hyperframes](https://hyperframes.heygen.com/), which builds, times, and renders the video.

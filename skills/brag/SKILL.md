@@ -9,7 +9,7 @@ You built it. Now let's brag about it.
 
 ## Invocation dispatch (must happen first)
 
-**Model check.** If you are Claude Opus 5.5, Claude Sonnet 5.5 or Claude Fable 5.2 and the invocation doesn't ask for the full workflow (`--full`, "use the full brag") or for voiceover (`--voice`, which brag-slim doesn't do), switch to brag-slim: read `<skill-dir>/slim.md` (the /brag-slim skill, bundled here) and follow it for the rest of this run instead of this file. Pass along the user's input, and pass any other options (`--no-music`, `--title`, …) as plain-language direction. Tell the user in one line first, e.g. "You're on Sonnet 5.5, so I'm using /brag-slim: I build the whole video myself. Say 'use the full brag' to switch back." If you are any other model, or can't tell which model you are, skip this check.
+**Model check.** On Claude Opus 5.5, Claude Sonnet 5.5 or Claude Fable 5.2, switch to brag-slim for ordinary runs. Stay in the full workflow when the user asks for it, or uses `--voice`, `--sound-design`, `--stems`, `--teleprompter` or `--pr`. For a slim run, read `<skill-dir>/slim.md`, pass the user's input and options as plain-language direction, and tell the user which workflow you are using. All other models use the full workflow.
 
 Before inspecting the project, parse the complete `/brag` invocation. If the
 invocation contains `--voice`, set `voice.enabled = true`. Enable narration
@@ -46,6 +46,10 @@ Parse these options:
 | `--duration` | seconds | auto (15-25s) |
 | `--no-music` | flag | music on |
 | `--no-sfx` | flag | sfx on |
+| `--sound-design` | flag | off. Uses motion-timed sound effects with the music bed disabled |
+| `--stems` | flag | off. Exports dialogue, music, sound effects and the rendered mix |
+| `--teleprompter` | flag | off. Requires `--voice` and implies `--stems` |
+| `--pr` | PR number, GitHub PR URL, or comma-separated numbers from the same repo | off |
 | `--title` | string | inferred from project |
 | `--voice` | flag | narration off |
 
@@ -54,6 +58,10 @@ Pixel size at 30fps: landscape is 1920×1080, vertical is 1080×1920, square is 
 Voice is opt-in. If `--voice` is present, use Kokoro via Hyperframes and do
 not add any provider-selection logic. The voice workflow is intentionally
 single-provider.
+
+`--sound-design` implies `--no-music`. If `--no-sfx` is also explicit, honor it
+and skip the effects workflow. If `--teleprompter` was requested without
+`--voice`, ask whether to add narration or omit the teleprompter.
 
 Tone can be a preset (`default`, `polished`, `yc-parody`, `chaotic`, `deadpan`, `cinematic`, `app-store`) or a creative direction such as "fake Series A launch from 2016", "museum exhibit", or "overproduced mobile game ad".
 
@@ -83,6 +91,9 @@ Use a timestamp when:
 
 Generate the timestamp at the start of the run (`YYYY-MM-DD-HHmmss`) and use it consistently for all output paths in that run: plan, brief, composition, render, and share copy.
 
+For `--pr`, use `brag-output-pr-42/` or `brag-output-pr-42-43/` as the base.
+Apply the same timestamp rule to that base.
+
 ## Skill directory
 
 `<skill-dir>` is the directory containing this `SKILL.md`. Claude Code prints it as "Base directory for this skill" when the skill loads; for other agents it's wherever the skill was installed. Bundled assets are under `<skill-dir>/assets/` and scripts under `<skill-dir>/scripts/`. Don't guess an install path: a plugin install, a `~/.claude/skills/` copy, and this repo all put it somewhere different.
@@ -95,7 +106,12 @@ Generate the timestamp at the start of the run (`YYYY-MM-DD-HHmmss`) and use it 
 
 Scan the project directory and extract the information needed to plan the brag video.
 
-**Gate:** You can answer all 9 questions in the brag planning rubric.
+For `--pr`, gather the before and after evidence using [PR input](references/pr-mode.md)
+and write `<output-dir>/pr-context.md` before planning. Use that context to
+answer the standard rubric with the changed flow as the subject.
+
+**Gate:** You can answer all 9 questions in the brag planning rubric. A PR run
+also has evidence for both states and the verified PR status.
 
 ---
 
@@ -104,6 +120,9 @@ Scan the project directory and extract the information needed to plan the brag v
 **Read:** [references/step-2-plan.md](references/step-2-plan.md)
 
 Write `<output-dir>/brag-plan.md` (where `<output-dir>` is `brag-output/` or the timestamped variant chosen above). Answer the planning rubric. Commit to a creative angle. Write the beat-by-beat storyboard including scenes, text, timing, transitions, and SFX cues.
+
+For `--sound-design` with effects enabled, plan a sound cue for each key
+interaction, transition, and payoff using the [sound-design guidance](references/audio.md#sound-design-without-a-music-bed).
 
 When music is selected, include a compact `Music cue guidance` section: read the bundled track's cue preset from `<skill-dir>/assets/music/cues/` if present, otherwise note cues will be detected at composition time (any track now supports beat sync — see `references/audio.md`). Cue metadata is optional timing guidance only: story, readability, pacing, and product clarity stay primary.
 

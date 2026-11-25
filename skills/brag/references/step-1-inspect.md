@@ -27,6 +27,19 @@ Read these in priority order:
 
 7. **`public/` or `assets/`** — note any images, logos, icons. These can be referenced in the composition.
 
+## Capture a native app
+
+Use the app's source for its visual identity and choose a workflow you can
+record in the running app. Use an iOS simulator, Android emulator, or the
+desktop app window as appropriate. Seed fictional records, clear unrelated
+system dialogs, and script the app interactions where possible so you can
+repeat the take.
+
+Trim the recording around the actual UI action and result. Give HyperFrames
+the footage and the time of each visible action to preserve when it cuts or
+retimes the clip. For `--sound-design`, mute the raw capture and use the
+edited action times to place the interaction cues.
+
 ## The 9-question rubric
 
 After reading, answer all nine. Write these down before moving to Step 2.
